@@ -1,0 +1,333 @@
+/* AI Assistant Floating Chat Styles */
+.ai-chat-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 99999;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-chat-trigger:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+}
+
+.ai-chat-trigger .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    border: 2px solid white;
+}
+
+.ai-chat-window {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 380px;
+    height: 550px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 100000;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ai-chat-header {
+    background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ai-chat-header h5 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.message.ai {
+    align-self: flex-start;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    border-bottom-left-radius: 2px;
+}
+
+.message.member {
+    align-self: flex-end;
+    background: #3b82f6;
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+.message.admin {
+    align-self: flex-start;
+    background: #059669;
+    color: white;
+    border-bottom-left-radius: 2px;
+}
+
+.message-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 5px;
+    display: block;
+    text-align: right;
+}
+
+.ai-chat-footer {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+
+.ai-chat-input-group {
+    display: flex;
+    gap: 10px;
+    background: #f1f5f9;
+    padding: 5px;
+    border-radius: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+.ai-chat-input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px 15px;
+    outline: none;
+    font-size: 14px;
+}
+
+.ai-chat-send {
+    width: 40px;
+    height: 40px;
+    background: #059669;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+.ai-chat-send:hover {
+    background: #047857;
+}
+
+.typing-indicator {
+    display: inline-flex;
+    gap: 3px;
+    padding: 10px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: blink 1.4s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Response Type Badges */
+.res-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: inline-block;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.tag-approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.tag-notice {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.tag-ai {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.tag-notfound {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.tag-sensitive {
+    background: #000;
+    color: #fff;
+}
+
+/* New UI Enhancements */
+.ai-topic-bar {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.btn-xs {
+    padding: 2px 8px;
+    font-size: 10px;
+    border-radius: 20px;
+}
+
+.ai-helper-toast {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.ai-helper-toast .alert {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Scrollbar styling for topic bar */
+.ai-topic-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.ai-topic-bar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .ai-chat-window {
+        width: calc(100% - 40px);
+        right: 20px;
+        bottom: 90px;
+        height: 70vh;
+    }
+
+    .ai-chat-trigger {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+    }
+}
+/* 
+   SCOPE: Siddh Gautam AI Content Sections
+   Objective: Increase font size for specific sections (Rules, Maintenance, Redevelopment, Legal)
+*/
+
+.ai-section[data-category='नियम'] .ai-content,
+.ai-section[data-category='मेंटेनन्स'] .ai-content,
+.ai-section[data-category='रिडेव्हलपमेंट'] .ai-content,
+.ai-section[data-category='कायदेशीर'] .ai-content,
+.ai-section[data-category='Legal_AI'] .ai-content {
+    font-size: 16px !important;
+    line-height: 1.6;
+}
+
+.ai-section[data-category='नियम'] .ai-content strong, 
+.ai-section[data-category='नियम'] .ai-content b,
+.ai-section[data-category='मेंटेनन्स'] .ai-content strong,
+.ai-section[data-category='मेंटेनन्स'] .ai-content b,
+.ai-section[data-category='रिडेव्हलपमेंट'] .ai-content strong,
+.ai-section[data-category='रिडेव्हलपमेंट'] .ai-content b,
+.ai-section[data-category='कायदेशीर'] .ai-content strong,
+.ai-section[data-category='कायदेशीर'] .ai-content b,
+.ai-section[data-category='Legal_AI'] .ai-content strong,
+.ai-section[data-category='Legal_AI'] .ai-content b {
+    font-size: 1.05em; 
+    color: #2d3748;
+}
+
+.ai-section[data-category='नियम'] .ai-content li,
+.ai-section[data-category='मेंटेनन्स'] .ai-content li,
+.ai-section[data-category='रिडेव्हलपमेंट'] .ai-content li,
+.ai-section[data-category='कायदेशीर'] .ai-content li {
+    margin-bottom: 5px;
+}

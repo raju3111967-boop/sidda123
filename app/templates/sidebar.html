@@ -1,0 +1,48 @@
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="list-group list-group-flush admin-sidebar">
+        <a href="{{ url_for('admin_dashboard') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+            <i class="fas fa-th-large me-2"></i> डॅशबोर्ड होम
+        </a>
+        <a href="{{ url_for('admin_members') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_members' %}active{% endif %}">
+            <i class="fas fa-users me-2"></i> सभासद व्यवस्थापन
+        </a>
+        <a href="{{ url_for('admin_notices') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_notices' %}active{% endif %}">
+            <i class="fas fa-bullhorn me-2"></i> सूचना व्यवस्थापन
+        </a>
+        <a href="{{ url_for('admin_complaints') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_complaints' %}active{% endif %}">
+            <i class="fas fa-exclamation-circle me-2"></i> तक्रार व्यवस्थापन
+        </a>
+        <a href="{{ url_for('admin_director_board') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_director_board' %}active{% endif %}">
+            <i class="fas fa-user-tie me-2"></i> संचालक मंडळ व PMC
+        </a>
+        <a href="{{ url_for('admin_redevelopment') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_redevelopment' %}active{% endif %}">
+            <i class="fas fa-building me-2"></i> रिडेव्हलपमेंट माहिती व प्रश्नोत्तरे
+        </a>
+        <a href="{{ url_for('admin_view') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_view' %}active{% endif %}">
+            <i class="fas fa-eye me-2"></i> पहा (View Records)
+        </a>
+        <a href="{{ url_for('admin_documents') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_documents' %}active{% endif %}">
+            <i class="fas fa-file-alt me-2"></i> दस्तऐवज व्यवस्थापन (Docs)
+        </a>
+        <a href="{{ url_for('admin_login_activity') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_login_activity' %}active{% endif %}">
+            <i class="fas fa-history me-2"></i> लॉगिन कृती (Logs)
+        </a>
+        <a href="{{ url_for('admin_ai_training') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_ai_training' %}active{% endif %}">
+            <i class="fas fa-brain me-2"></i> AI ट्रेनिंग पॅनेल
+        </a>
+        <a href="{{ url_for('admin_settings') }}"
+            class="list-group-item list-group-item-action py-3 {% if request.endpoint == 'admin_settings' %}active{% endif %}">
+            <i class="fas fa-cog me-2"></i> सेटिंग
+        </a>
+    </div>
+</div>

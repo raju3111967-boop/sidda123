@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}तक्रार व्यवस्थापन - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-comments"></i> तक्रार व्यवस्थापन</h2>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="fas fa-list me-2 text-primary"></i>सर्व तक्रारी</h5>
+    </div>
+    <div class="card-body">
+        {% if complaints %}
+        {% for complaint in complaints %}
+        <div
+            class="card mb-3 border-start border-4 {% if complaint.status == 'उत्तर दिले' %}border-success{% else %}border-warning{% endif %} shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="fw-bold">{{ complaint.subject }}</h6>
+                        <p class="mb-2"><strong>सदस्य:</strong> {{ complaint.member.name }} ({{
+                            complaint.member.building_no }}-{{ complaint.member.flat_no }})</p>
+                        <p class="mb-2 text-secondary">{{ complaint.description }}</p>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i> {{ complaint.created_at.strftime('%d/%m/%Y %I:%M %p')
+                            }}
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <span
+                            class="badge {% if complaint.status == 'उत्तर दिले' %}bg-success{% else %}bg-warning{% endif %} mb-3 rounded-pill px-3">
+                            {{ complaint.status }}
+                        </span>
+
+                        {% if complaint.status == 'प्रलंबित' %}
+                        <form method="POST" action="{{ url_for('admin_complaint_reply', id=complaint.id) }}">
+                            <!-- AI Suggestion Section -->
+                            {% if complaint.ai_suggested_reply %}
+                            <div class="alert alert-info mt-2 py-2 px-3 border-0 small shadow-sm"
+                                style="background-color: rgba(13, 202, 240, 0.1);">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-magic text-info me-2"></i>
+                                    <small class="fw-bold text-info">AI द्वारे सुचवलेले उत्तर:</small>
+                                </div>
+                                <p class="mb-0 font-italic text-secondary" id="aiReply{{ complaint.id }}">
+                                    {{ complaint.ai_suggested_reply }}</p>
+                                <div class="text-end mt-1">
+                                    <button type="button"
+                                        class="btn btn-sm btn-link text-info p-0 text-decoration-none small"
+                                        onclick="copyAIReply({{ complaint.id }})">
+                                        <i class="far fa-copy me-1"></i> कॉपी करा
+                                    </button>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3 mt-3">
+                                <label class="form-label small fw-bold">तुमचे उत्तर</label>
+                                <textarea name="reply" class="form-control" rows="3" id="replyText{{ complaint.id }}"
+                                    required>{{ complaint.admin_reply if complaint.admin_reply else '' }}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary px-3">
+                                <i class="fas fa-reply me-1"></i> उत्तर द्या
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-success border-0 shadow-sm py-2 px-3">
+                            <strong class="small fw-bold">उत्तर:</strong><br>
+                            <p class="small mb-1">{{ complaint.admin_reply }}</p>
+                            <small class="text-muted"><i class="fas fa-clock me-1"></i> {{
+                                complaint.replied_at.strftime('%d/%m/%Y %I:%M %p') }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-info border-0 shadow-sm">
+            <i class="fas fa-info-circle me-2"></i> कोणत्याही तक्रारी नाहीत
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyAIReply(id) {
+        const aiText = document.getElementById('aiReply' + id).innerText;
+        const replyBox = document.getElementById('replyText' + id);
+        if (replyBox) {
+            replyBox.value = aiText;
+            // Effect
+            replyBox.classList.add('bg-light');
+            setTimeout(() => replyBox.classList.remove('bg-light'), 500);
+        }
+    }
+</script>
+{% endblock %}

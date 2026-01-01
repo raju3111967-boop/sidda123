@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}लॉगिन इतिहास - ॲडमिन पॅनेल{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">लॉगिन कृती (Security Logs)</h2>
+        <p class="text-muted small mb-0">वापरकर्त्यांच्या लॉगिन आणि लॉगआउट क्रियांचे परीक्षण करा.</p>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body py-3">
+        <form action="{{ url_for('admin_login_activity') }}" method="GET" class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-0 bg-light"
+                        placeholder="युजरनेम शोधा..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="role" class="form-select border-0 bg-light">
+                    <option value="all" {% if current_role=='all' %}selected{% endif %}>सर्व भूमिका (All Roles)</option>
+                    <option value="admin" {% if current_role=='admin' %}selected{% endif %}>प्रशासक (Admin)</option>
+                    <option value="member" {% if current_role=='member' %}selected{% endif %}>सभासद (Member)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="time" class="form-select border-0 bg-light">
+                    <option value="all" {% if current_time=='all' %}selected{% endif %}>सर्व वेळ (All Time)</option>
+                    <option value="today" {% if current_time=='today' %}selected{% endif %}>आज (Today)</option>
+                    <option value="week" {% if current_time=='week' %}selected{% endif %}>या आठवड्यात (This Week)
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 flex-grow-1">फिल्टर करा</button>
+                <a href="{{ url_for('admin_login_activity') }}" class="btn btn-light rounded-pill px-3" title="Reset"><i
+                        class="fas fa-sync-alt"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Activity Table Card -->
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white py-3 border-0">
+        <h5 class="mb-0 fw-bold"><i class="fas fa-shield-alt text-warning me-2"></i>सुरक्षा लॉग्स</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small">
+                    <tr>
+                        <th class="ps-4">अ.नं.</th>
+                        <th>वापरकर्ता</th>
+                        <th>भूमिका</th>
+                        <th>लॉगिन वेळ</th>
+                        <th>लॉगआउट वेळ</th>
+                        <th>कालावधी</th>
+                        <th class="pe-4">IP / डिव्हाइस</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if activities %}
+                    {% for log in activities %}
+                    <tr>
+                        <td class="ps-4 text-muted small fw-bold">{{ loop.index }}</td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ log.username }}</div>
+                            {% if log.member_id %}
+                            <small class="text-primary">ID: #{{ log.member_id }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.username == 'admin' %}
+                            <span class="badge bg-primary-soft text-primary rounded-pill px-3">Admin</span>
+                            {% else %}
+                            <span class="badge bg-info-soft text-info rounded-pill px-3">Member</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small fw-bold">{{ log.login_time.strftime('%d %b, %Y') }}</div>
+                            <div class="text-muted small">{{ log.login_time.strftime('%I:%M %p') }}</div>
+                        </td>
+                        <td>
+                            {% if log.logout_time %}
+                            <div class="small fw-bold text-secondary">{{ log.logout_time.strftime('%d %b, %Y') }}</div>
+                            <div class="text-muted small">{{ log.logout_time.strftime('%I:%M %p') }}</div>
+                            {% else %}
+                            <span class="text-success small fw-bold"><i
+                                    class="fas fa-circle me-1 pulse-dot"></i>सक्रिय</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.logout_time %}
+                            {% set duration = (log.logout_time - log.login_time).seconds %}
+                            <small class="text-muted">
+                                {% if duration < 60 %} {{ duration }} से. {% elif duration < 3600 %} {{
+                                    (duration/60)|int }} मि. {% else %} {{ (duration/3600)|round(1) }} तास {% endif %}
+                                    </small>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                        </td>
+                        <td class="pe-4">
+                            <div class="badge bg-light text-dark border-0 small">
+                                <i class="fas fa-laptop me-1 opacity-50"></i> {{ log.ip_address or '127.0.0.1' }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-search fa-3x mb-3 opacity-25"></i>
+                            <p>निवडलेल्या निकषांनुसार कोणतीही कृती सापडली नाही.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    .bg-primary-soft {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+
+    .bg-info-soft {
+        background-color: #e0faff;
+        color: #0dcaf0;
+    }
+
+    .pulse-dot {
+        font-size: 8px;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.95);
+            opacity: 0.5;
+        }
+
+        50% {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(0.95);
+            opacity: 0.5;
+        }
+    }
+</style>
+{% endblock %}

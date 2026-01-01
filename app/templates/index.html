@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}मुख्य पृष्ठ - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1><i class="fas fa-building"></i> सिध्द गौतम को-ऑप हौसिंग सोसायटी लि.</h1>
+        <p class="lead">429/1अ मानेकशा नगर, द्वारका, नाशिक शहर – 422011</p>
+        <p><i class="fas fa-certificate"></i> रजिस्ट्रेशन नं: NSK/HSG(T.C)/507/1987</p>
+        <div class="mt-4">
+            {% if not session.get('user_id') %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-sign-in-alt"></i> सभासद लॉगिन
+            </a>
+            <a href="{{ url_for('register') }}" class="btn btn-accent btn-lg">
+                <i class="fas fa-user-plus"></i> सभासद नोंदणी
+            </a>
+            {% else %}
+            <a href="{{ url_for('member_dashboard') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt"></i> डॅशबोर्ड पहा
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4">
+                <h2 class="mb-4"><i class="fas fa-info-circle"></i> आमच्या विषयी</h2>
+                <p class="lead">
+                    सिध्द गौतम को-ऑप हौसिंग सोसायटी ही नाशिक शहरातील एक प्रतिष्ठित सोसायटी आहे.
+                    आमची सोसायटी सन १९८७ पासून कार्यरत आहे.
+                </p>
+                <p>
+                    आमच्या सोसायटीत सर्व आधुनिक सुविधा उपलब्ध आहेत. सोसायटीचे व्यवस्थापन पारदर्शक
+                    आणि सदस्य-केंद्रित आहे. आम्ही सतत सदस्यांच्या सोयीसाठी नवीन उपक्रम राबवत असतो.
+                </p>
+                <div class="mt-4">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">35+</div>
+                                <div class="stat-label">वर्षे अनुभव</div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-number">100+</div>
+                                <div class="stat-label">सदस्य</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body text-center p-5">
+                        <div class="icon-box mb-4" style="width: 120px; height: 120px; font-size: 3rem;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h4>आधुनिक सुविधा</h4>
+                        <ul class="list-unstyled text-start mt-4">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> २४ तास पाणी पुरवठा</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> सुरक्षा व्यवस्था</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> पार्किंग सुविधा</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> लिफ्ट सुविधा</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> बाग व खेळाचे मैदान</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success"></i> ऑनलाईन व्यवस्थापन</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5"><i class="fas fa-star"></i> आमच्या सेवा</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h5 class="card-title">सूचना फलक</h5>
+                        <p class="card-text">
+                            सोसायटीच्या सर्व महत्वाच्या सूचना आणि घोषणा ऑनलाईन पहा.
+                            नवीन सूचना मिळताच तुम्हाला कळवले जाईल.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <h5 class="card-title">तक्रार व्यवस्थापन</h5>
+                        <p class="card-text">
+                            तुमच्या तक्रारी ऑनलाईन नोंदवा आणि त्यांचा मागोवा घ्या.
+                            व्यवस्थापन तुमच्या तक्रारींवर लवकर प्रतिसाद देईल.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h5 class="card-title">दस्तऐवज</h5>
+                        <p class="card-text">
+                            सभेचे कार्यवृत्त, सूचना, शेअर सर्टिफिकेट आणि इतर महत्वाचे
+                            दस्तऐवज ऑनलाईन डाउनलोड करा.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h5 class="card-title">रिडेव्हलपमेंट</h5>
+                        <p class="card-text">
+                            सोसायटीच्या रिडेव्हलपमेंट प्रकल्पाची प्रगती आणि अपडेट्स
+                            नियमितपणे पहा.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h5 class="card-title">प्रोफाईल व्यवस्थापन</h5>
+                        <p class="card-text">
+                            तुमची वैयक्तिक माहिती अपडेट करा आणि पासवर्ड बदला.
+                            तुमचा डेटा सुरक्षित ठेवला जातो.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h5 class="card-title">मोबाईल फ्रेंडली</h5>
+                        <p class="card-text">
+                            मोबाईल, टॅबलेट किंवा कॉम्प्युटर - कोणत्याही डिव्हाईसवरून
+                            वेबसाईट वापरा.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+{% if not session.get('user_id') %}
+<section class="py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-green) 100%);">
+    <div class="container text-center text-white">
+        <h2 class="mb-4"><i class="fas fa-rocket"></i> आजच सुरुवात करा!</h2>
+        <p class="lead mb-4">
+            सिध्द गौतम सोसायटीचे सदस्य असाल तर आजच सभासद नोंदणी करा आणि सर्व ऑनलाईन सुविधांचा लाभ घ्या.
+        </p>
+        <a href="{{ url_for('register') }}" class="btn btn-accent btn-lg">
+            <i class="fas fa-user-plus"></i> आता सभासद नोंदणी करा
+        </a>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

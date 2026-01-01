@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}रिडेव्हलपमेंट - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4 text-primary fw-bold"><i class="fas fa-building"></i> रिडेव्हलपमेंट प्रगती व माहिती</h2>
+
+        {% if info %}
+        <div class="card shadow-sm border-0 rounded-4 mb-5 overflow-hidden">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle me-2"></i>{{ info.title }}</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-dark lead mb-0" style="white-space: pre-wrap;">{{ info.details }}</div>
+                <div class="mt-3 text-muted small">अंतिम अद्यतन: {{ info.updated_at.strftime('%d/%m/%Y %I:%M %p') }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <h4 class="mb-4 fw-bold text-secondary"><i class="fas fa-tasks me-2"></i>प्रकल्प अपडेट्स (Timeline)</h4>
+        {% if updates %}
+        <div class="timeline">
+            {% for update in updates %}
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h5>{{ update.title }}</h5>
+                    <p>{{ update.description }}</p>
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: {{ update.progress_percentage }}%">
+                            {{ update.progress_percentage }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        <i class="fas fa-calendar"></i> {{ update.update_date.strftime('%d/%m/%Y') }}
+                    </small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> सध्या रिडेव्हलपमेंट अपडेट्स उपलब्ध नाहीत
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

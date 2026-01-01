@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="mr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="सिध्द गौतम को-ऑप हौसिंग सोसायटी लि. - ऑनलाईन व्यवस्थापन प्रणाली">
+    <meta name="keywords" content="हौसिंग सोसायटी, नाशिक, सिध्द गौतम, मानेकशा नगर">
+    <meta name="author" content="श्री. राजेश भालेराव">
+
+    <title>{% block title %}सिध्द गौतम सोसायटी{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ai_assistant.css') }}?v=debug_admin_2">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body data-user-role="{{ session.get('role', 'guest') }}">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-building"></i> सिध्द गौतम सोसायटी
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.get('user_id') %}
+                    {% if session.get('role') == 'admin' %}
+                    <!-- Admin Menu -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> डॅशबोर्ड
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_members') }}">
+                            <i class="fas fa-users"></i> सदस्य
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_director_board') }}">
+                            <i class="fas fa-user-tie"></i> संचालक मंडळ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_notices') }}">
+                            <i class="fas fa-bullhorn"></i> सूचना
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_complaints') }}">
+                            <i class="fas fa-comments"></i> तक्रारी
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_redevelopment') }}">
+                            <i class="fas fa-building"></i> रिडेव्हलपमेंट
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_view') }}">
+                            <i class="fas fa-eye"></i> पहा
+                        </a>
+                    </li>
+                    {% else %}
+                    <!-- Member Menu -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('member_dashboard') }}">
+                            <i class="fas fa-home"></i> मुख्य पृष्ठ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('member_notices') }}">
+                            <i class="fas fa-bullhorn"></i> सूचना फलक
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('member_complaints') }}">
+                            <i class="fas fa-comment-dots"></i> तक्रार
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('member_redevelopment') }}">
+                            <i class="fas fa-building"></i> रिडेव्हलपमेंट
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('member_documents') }}">
+                            <i class="fas fa-file-alt"></i> दस्तऐवज
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('member_profile') }}">
+                            <i class="fas fa-user"></i> माझी प्रोफाईल
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> लॉगआउट
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="fas fa-home"></i> मुख्य पृष्ठ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">
+                            <i class="fas fa-sign-in-alt"></i> लॉगिन
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">
+                            <i class="fas fa-user-plus"></i> नोंदणी
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% if session.get('role') == 'admin' %}
+            <div class="ms-lg-3 d-none d-lg-block">
+                <a href="{{ url_for('logout') }}" class="btn btn-accent btn-sm rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i> लॉग आऊट
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container mt-3">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-info-circle"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% if session.get('role') == 'admin' and request.path.startswith('/admin') %}
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-lg-3 col-xl-2">
+                    {% include 'sidebar.html' %}
+                </div>
+                <div class="col-lg-9 col-xl-10">
+                    {% endif %}
+
+                    {% block content %}{% endblock %}
+
+                    {% if session.get('role') == 'admin' and request.path.startswith('/admin') %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-building"></i> सोसायटीची माहिती</h5>
+                    <p><strong>सिध्द गौतम को-ऑप हौसिंग सोसायटी लि.</strong></p>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i>
+                        429/1अ मानेकशा नगर, द्वारका,<br>
+                        नाशिक शहर – 422011
+                    </p>
+                    <p>
+                        <i class="fas fa-certificate"></i>
+                        रजिस्ट्रेशन नं: NSK/HSG(T.C)/507/1987
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-link"></i> द्रुत दुवे</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}"><i class="fas fa-angle-right"></i> मुख्य पृष्ठ</a></li>
+                        {% if session.get('user_id') %}
+                        <li><a href="{{ url_for('member_notices') }}"><i class="fas fa-angle-right"></i> सूचना</a></li>
+                        <li><a href="{{ url_for('member_complaints') }}"><i class="fas fa-angle-right"></i> तक्रार</a>
+                        </li>
+                        <li><a href="{{ url_for('member_redevelopment') }}"><i class="fas fa-angle-right"></i>
+                                रिडेव्हलपमेंट</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('login') }}"><i class="fas fa-angle-right"></i> लॉगिन</a></li>
+                        <li><a href="{{ url_for('register') }}"><i class="fas fa-angle-right"></i> नोंदणी</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-phone"></i> संपर्क</h5>
+                    <p>
+                        <i class="fas fa-user-tie"></i> चेअरमन<br>
+                        श्री. शामराव बाबुराव मोरे<br>
+                        <i class="fas fa-mobile-alt"></i> 9423557744
+                    </p>
+                    <p>
+                        <i class="fas fa-user-tie"></i> सचिव<br>
+                        श्री दिपक भगवानदास मोरे<br>
+                        <i class="fas fa-mobile-alt"></i> 9922030401
+                    </p>
+                </div>
+            </div>
+
+            <div class="developer-credit">
+                <p class="mb-0">
+                    <i class="fas fa-code"></i>
+                    Developed by <strong>श्री. राजेश भालेराव</strong> |
+                    <i class="fas fa-mobile-alt"></i> 9552840443
+                </p>
+                <p class="mb-0 mt-1">
+                    <small>&copy; 2025 सिध्द गौतम को-ऑप हौसिंग सोसायटी लि. सर्व हक्क राखीव.</small>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
+
+    {% if session.get('user_id') is not none or session.get('role') == 'admin' %}
+
+    <!-- DEBUG MARKER FOR ADMIN -->
+    {% if session.get('role') == 'admin' %}
+    <div
+        style="position:fixed; bottom:10px; left:10px; z-index:999999; background:black; color:lime; padding:5px; font-size:10px; border-radius:5px; opacity:0.8;">
+        ✅ Admin AI Active <br>
+        ID: {{ session.get('user_id') }} | Role: {{ session.get('role') }}
+    </div>
+    {% endif %}
+
+    <!-- AI Assistant Floating UI -->
+    <div class="ai-chat-trigger shadow" title="Society AI असिस्टंट" style="display: flex !important;">
+        <i class="fas fa-robot"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+            id="ai-notif">!</span>
+    </div>
+
+    <div class="ai-chat-window">
+        <!-- Chat Content matches previous -->
+        <div class="ai-chat-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-robot"></i>
+                <div>
+                    <h6 class="m-0">सिध्द गौतम AI</h6>
+                    <small class="text-white-50" style="font-size: 10px;">• Online | Smart Assistant</small>
+                </div>
+            </div>
+            <div class="ai-chat-actions">
+                <button class="btn btn-sm text-white ai-chat-close"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+
+        <!-- Topic Selector -->
+        <div class="ai-topic-bar p-2 bg-light border-bottom d-flex gap-2 overflow-auto" style="white-space: nowrap;">
+            <button class="btn btn-xs btn-primary active" data-topic="all">सर्व</button>
+            <button class="btn btn-xs btn-outline-secondary" data-topic="rules">नियम</button>
+            <button class="btn btn-xs btn-outline-secondary" data-topic="maintenance">मेंटेनन्स</button>
+            <button class="btn btn-xs btn-outline-secondary" data-topic="redevelopment">रिडेव्हलपमेंट</button>
+            <button class="btn btn-xs btn-outline-secondary" data-topic="legal">कायदेशीर</button>
+        </div>
+
+        <div class="ai-chat-body">
+            <!-- Helper Tooltip -->
+            <div class="ai-helper-toast mb-2" style="display: none;">
+                <div class="alert alert-info py-2 px-3 small mb-0 rounded-pill">
+                    <i class="fas fa-info-circle me-1"></i> "मेंटेनन्स बिल कधी भरायचे?" असे विचारून पहा.
+                </div>
+            </div>
+
+            <div class="message ai">
+                नमस्ते! मी या सोसायटीचा AI असिस्टंट आहे. तुम्ही वरून विषय निवडून किंवा थेट प्रश्न विचारू शकता.
+                <span class="message-time">{{ now.strftime('%H:%M') if now else 'आत्ता' }}</span>
+            </div>
+        </div>
+        <div class="ai-chat-footer">
+            <div class="ai-chat-input-group shadow-sm">
+                <input type="text" id="ai-chat-input" placeholder="उदा. मेंटेनन्स नियम काय आहेत?" autocomplete="off">
+                <button class="ai-chat-send">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/ai_assistant.js') }}?v=debug_admin_2"></script>
+    {% endif %}
+</body>
+
+</html>

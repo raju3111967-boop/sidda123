@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}सूचना व्यवस्थापन - ॲडमिन पॅनेल{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 
+       Professional Admin Theme - Government / Society Management 
+       Clean, Modern, and Responsive
+    */
+    :root {
+        --primary-blue: #0d47a1;
+        --secondary-blue: #1976d2;
+        --light-blue: #e3f2fd;
+        --success-green: #2e7d32;
+        --danger-red: #d32f2f;
+        --grey-text: #616161;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        color: var(--primary-blue);
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+    }
+
+    .card-modern {
+        border: none;
+        border-radius: 15px;
+        box-shadow: var(--card-shadow);
+        background: white;
+        overflow: hidden;
+    }
+
+    /* Table Styling */
+    .table-modern thead th {
+        background-color: #f1f3f5;
+        color: var(--grey-text);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border: none;
+    }
+
+    .table-modern tbody tr {
+        transition: background-color 0.2s;
+    }
+
+    .table-modern tbody tr:hover {
+        background-color: #f8f9ff;
+    }
+
+    .table-modern td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status-active {
+        background-color: #e8f5e9;
+        color: var(--success-green);
+        border: 1px solid rgba(46, 125, 50, 0.2);
+    }
+
+    .status-inactive {
+        background-color: #ffebee;
+        color: var(--danger-red);
+        border: 1px solid rgba(211, 47, 47, 0.2);
+    }
+
+    /* Action Buttons */
+    .btn-action {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        border: 1px solid #dee2e6;
+        background: white;
+        cursor: pointer;
+    }
+
+    .btn-edit {
+        color: var(--secondary-blue);
+    }
+
+    .btn-edit:hover {
+        background-color: var(--secondary-blue);
+        color: white;
+        border-color: var(--secondary-blue);
+    }
+
+    .btn-delete {
+        color: var(--danger-red);
+    }
+
+    .btn-delete:hover {
+        background-color: var(--danger-red);
+        color: white;
+        border-color: var(--danger-red);
+    }
+
+    /* Modal Styling */
+    .modal-content-modern {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header-modern {
+        border-bottom: 1px solid #eee;
+        padding: 1.5rem 2rem;
+    }
+
+    .form-control-modern {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+    }
+
+    .form-control-modern:focus {
+        border-color: var(--secondary-blue);
+        box-shadow: 0 0 0 0.25rem rgba(25, 118, 210, 0.1);
+    }
+
+    .btn-rounded {
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: 600;
+    }
+
+    /* Truncate text */
+    .truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        max-height: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center content-header">
+    <div>
+        <h2 class="page-title">सूचना व्यवस्थापन</h2>
+        <p class="text-muted mb-0 small"><i class="fas fa-home me-1"></i> सिध्द गौतम को-ऑप हौसिंग सोसायटी लि.</p>
+    </div>
+    <button class="btn btn-primary btn-rounded shadow-sm mt-3 mt-md-0" data-bs-toggle="modal"
+        data-bs-target="#addNoticeModal">
+        <i class="fas fa-plus me-2"></i> + नवीन सूचना जोडा
+    </button>
+</div>
+
+<!-- Table Card -->
+<div class="card card-modern shadow-sm border-0 rounded-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-modern align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">अं.नं.</th>
+                        <th>सूचना शीर्षक</th>
+                        <th>तपशील</th>
+                        <th>दिनांक</th>
+                        <th>स्थिती</th>
+                        <th class="text-center pe-4">कृती</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if notices %}
+                    {% for notice in notices %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-muted">{{ loop.index }}</td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ notice.title }}</div>
+                        </td>
+                        <td>
+                            <div class="truncate-2 text-muted small" title="{{ notice.content }}">
+                                {{ notice.content }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if notice.created_at %}
+                            <div class="small fw-bold">{{ notice.created_at.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">{{
+                                notice.created_at.strftime('%I:%M %p') }}</div>
+                            {% else %}
+                            <span class="text-muted">---</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if notice.is_active %}
+                            <span class="status-badge status-active">सक्रिय</span>
+                            {% else %}
+                            <span class="status-badge status-inactive">निष्क्रिय</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center pe-4">
+                            <div class="d-flex justify-content-center gap-2">
+                                <button class="btn-action btn-edit" title="Edit" data-bs-toggle="modal"
+                                    data-bs-target="#editModal{{ notice.id }}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button class="btn-action btn-delete" title="Delete"
+                                    onclick="handleDelete('{{ notice.id }}', '{{ url_for('admin_notice_delete', id=notice.id) }}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted mb-3">
+                                <i class="fas fa-inbox fa-4x opacity-25"></i>
+                            </div>
+                            <h5 class="fw-normal text-secondary">सध्या कोणतीही सूचना उपलब्ध नाही</h5>
+                            <p class="small text-muted">नवीन सूचना तयार करण्यासाठी वरील बटण वापरा.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addNoticeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-modern shadow-lg overflow-hidden">
+            <div class="modal-header bg-primary text-white border-0 py-4 px-4">
+                <h5 class="fw-bold mb-0">नवीन सूचना जोडा</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('admin_notices') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">सूचना शीर्षक</label>
+                        <input type="text" name="title" class="form-control form-control-modern"
+                            placeholder="सूचनेचा मुख्य विषय लिहा..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">सूचना तपशील</label>
+                        <textarea name="content" class="form-control form-control-modern" rows="5"
+                            placeholder="पूर्ण माहिती येथे लिहा..." required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">प्रसिद्धी दिनांक</label>
+                            <input type="date" name="publish_date" class="form-control form-control-modern"
+                                value="{{ today_date }}">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">स्थिती</label>
+                            <select name="status" class="form-select form-control-modern">
+                                <option value="active" selected>सक्रिय (Active)</option>
+                                <option value="inactive">निष्क्रिय (Inactive)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">बंद
+                        करा</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">प्रकाशित करा</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modals (outside table) -->
+{% if notices %}
+{% for notice in notices %}
+<div class="modal fade" id="editModal{{ notice.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-modern shadow-lg">
+            <div class="modal-header modal-header-modern">
+                <h5 class="fw-bold mb-0 text-primary">सूचना दुरुस्त करा</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('admin_notice_edit', id=notice.id) }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">सूचना शीर्षक</label>
+                        <input type="text" name="title" class="form-control form-control-modern"
+                            value="{{ notice.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">सूचना तपशील</label>
+                        <textarea name="content" class="form-control form-control-modern" rows="5"
+                            required>{{ notice.content }}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">दिनांक</label>
+                            <input type="date" name="publish_date" class="form-control form-control-modern"
+                                value="{{ notice.created_at.strftime('%Y-%m-%d') if notice.created_at else '' }}">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label small fw-bold text-muted">स्थिती</label>
+                            <select name="status" class="form-select form-control-modern">
+                                <option value="active" {{ 'selected' if notice.is_active }}>सक्रिय (Active)</option>
+                                <option value="inactive" {{ 'selected' if not notice.is_active }}>निष्क्रिय (Inactive)
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">रद्द
+                        करा</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow">बदल जतन करा</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Confirmation before delete
+    function handleDelete(id, url) {
+        if (confirm('काय तुम्हाला खात्री आहे की ही सूचना कायमची हटवायची आहे?')) {
+            window.location.href = url;
+        }
+    }
+</script>
+{% endblock %}

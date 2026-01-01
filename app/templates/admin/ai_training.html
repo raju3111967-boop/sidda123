@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}AI ट्रेनिंग पॅनेल - ॲडमिन पॅनेल{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-brain text-primary"></i> AI ट्रेनिंग आणि कायदेशीर सहाय्य (Control Panel)
+        </h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKnowledgeModal">
+            <i class="fas fa-plus"></i> नवीन ज्ञान जोडा
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">एकूण ज्ञान भांडार</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_knowledge }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">प्रलंबित प्रश्न</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.pending_requests }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">एकूण संवाद</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_interactions }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">कायदेशीर मॉड्यूल</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">सक्रिय</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-4" id="aiTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests">अनुत्तरित
+                प्रश्न</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="knowledge-tab" data-bs-toggle="tab" data-bs-target="#knowledge">प्रशिक्षित
+                ज्ञान (KB)</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="legal-tab" data-bs-toggle="tab" data-bs-target="#legal">कायदेशीर सहाय्य
+                (Legal)</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="aiTabsContent">
+        <!-- Requests Tab -->
+        <div class="tab-pane fade show active" id="requests">
+            <div class="card shadow">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% if requests %}
+                        {% for req in requests %}
+                        <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="mb-1"><span class="badge bg-light text-dark">#{{ req.id }}</span> <small
+                                            class="text-muted">{{ req.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                    </div>
+                                    <p class="mb-1 font-weight-bold h5 text-dark">{{ req.question }}</p>
+                                </div>
+                                <button class="btn btn-primary" data-req-id="{{ req.id }}"
+                                    data-req-question="{{ req.question|escape }}"
+                                    onclick="openTrainModalFromData(this)">
+                                    <i class="fas fa-lightbulb"></i> उत्तर देऊन AI ट्रेन करा
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <i class="fas fa-check-circle fa-3x mb-3 text-success"></i><br>
+                            <h5>सर्व प्रश्नांची उत्तरे दिली गेली आहेत!</h5>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Base Tab -->
+        <div class="tab-pane fade" id="knowledge">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>वर्गवारी</th>
+                                    <th>कीवर्ड्स / पॅटर्न</th>
+                                    <th>उत्तर (संक्षिप्त)</th>
+                                    <th>स्थिती</th>
+                                    <th>कृती</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in knowledge %}
+                                <tr>
+                                    <td>
+                                        <span class="badge 
+                                            {% if item.category == 'नियम' %}bg-info
+                                            {% elif item.category == 'कायदेशीर' %}bg-danger
+                                            {% elif item.category == 'मेंटेनन्स' %}bg-warning
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ item.category }}
+                                        </span>
+                                    </td>
+                                    <td><code>{{ item.question_pattern }}</code></td>
+                                    <td><small>{{ item.answer[:100] }}...</small></td>
+                                    <td><span class="badge bg-success">सक्रिय</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary"><i
+                                                class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        <i class="fas fa-database mb-2 fa-2x"></i><br>
+                                        डेटाबेसमध्ये कोणतेही प्रशिक्षण डेटा आढळले नाही.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legal Help Tab -->
+        <div class="tab-pane fade" id="legal">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h6 class="m-0 font-weight-bold">महाराष्ट्र को-ऑप संस्था कायदा (Admin Guide)</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    हक्क आणि कर्तव्ये (कलम २४-२६)
+                                    <button class="btn btn-xs btn-outline-danger">पहा</button>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    नोमिनेशन (कलम ३०)
+                                    <button class="btn btn-xs btn-outline-danger">पहा</button>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    शेअर सर्टिफिकेट (कलम २९)
+                                    <button class="btn btn-xs btn-outline-danger">पहा</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-dark text-white">
+                            <h6 class="m-0 font-weight-bold">कायदेशीर रिप्लाय टेम्प्लेट्स (Drafts)</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-dark text-start"><i class="fas fa-file-invoice"></i>
+                                    मेंटेनन्स थकबाकी नोटीस - ड्राफ्ट</button>
+                                <button class="btn btn-outline-dark text-start"><i class="fas fa-file-contract"></i>
+                                    वारस नोंदणी मंजुरी पत्र</button>
+                                <button class="btn btn-outline-dark text-start"><i class="fas fa-file-signature"></i>
+                                    सभासद त्यागपत्र स्वीकार पत्र</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Logic same as before, just updated class/labels -->
+<!-- Add Knowledge Modal -->
+<div class="modal fade" id="addKnowledgeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{{ url_for('admin_ai_add_knowledge') }}" method="POST">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">नवीन AI ज्ञान जोडा</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">वर्गवारी (Category)</label>
+                            <select name="category" class="form-select" required>
+                                <option value="नियम">नियम (Rules)</option>
+                                <option value="मेंटेनन्स">मेंटेनन्स (Maintenance)</option>
+                                <option value="रिडेव्हलपमेंट">रिडेव्हलपमेंट (Redevelopment)</option>
+                                <option value="कायदेशीर">कायदेशीर (Legal)</option>
+                                <option value="इतर">इतर (General)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">प्राधान्य (Priority)</label>
+                            <select name="priority" class="form-select">
+                                <option value="1">नॉर्मल</option>
+                                <option value="2">मध्यम</option>
+                                <option value="3">उच्च (High)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">कीवर्ड्स (संवेद्य शब्द)</label>
+                        <input type="text" name="question_pattern" class="form-control"
+                            placeholder="उदा. मेंटेनन्स, बिल, दंड" required>
+                        <small class="text-muted">हे शब्द प्रश्नात आल्यावर AI हे उत्तर देईल.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">अधिकृत उत्तर (मराठीत)</label>
+                        <textarea name="answer" class="form-control" rows="6"
+                            placeholder="हौसिंग सोसायटी कायद्यानुसार योग्य उत्तर लिहा..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary px-4">जतन करा आणि AI ट्रेन करा</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Train Request Modal -->
+<div class="modal fade" id="trainRequestModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="approveRequestForm" method="POST">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">AI ट्रेनींग: सदस्य प्रश्नाला उत्तर द्या</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-light p-3 rounded mb-3">
+                        <small class="text-muted d-block mb-1">सदस्याचा प्रश्न:</small>
+                        <h5 id="req_question_text" class="m-0 text-primary"></h5>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">वर्गवारी निवडा</label>
+                        <select name="category" class="form-select" required>
+                            <option value="नियम">नियम</option>
+                            <option value="मेंटेनन्स">मेंटेनन्स</option>
+                            <option value="रिडेव्हलपमेंट">रिडेव्हलपमेंट</option>
+                            <option value="कायदेशीर">कायदेशीर</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">मराठीत उत्तर (हे भविष्यासाठी जतन होईल)</label>
+                        <textarea name="answer" class="form-control" rows="5" required
+                            placeholder="तुमचे उत्तर येथे लिहा..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">उत्तर सबमिट करा आणि AI ट्रेनिंग पूर्ण करा</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTrainModal(id, question) {
+        document.getElementById('req_question_text').innerText = question;
+        document.getElementById('approveRequestForm').action = '/admin/ai-training/approve-request/' + id;
+        var modalEl = document.getElementById('trainRequestModal');
+        var myModal = new bootstrap.Modal(modalEl);
+        myModal.show();
+    }
+
+    function openTrainModalFromData(btn) {
+        const id = btn.getAttribute('data-req-id');
+        const question = btn.getAttribute('data-req-question');
+        openTrainModal(id, question);
+    }
+</script>
+
+<style>
+    .nav-tabs .nav-link {
+        color: #5a5c69;
+        font-weight: 600;
+        border: none;
+        padding: 12px 20px;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        border-bottom: 3px solid #4e73df;
+        background: none;
+    }
+
+    .btn-xs {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 0.2rem;
+    }
+
+    .card {
+        border-radius: 12px;
+        border: none;
+    }
+
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+
+    .border-left-warning {
+        border-left: 4px solid #f6c23e !important;
+    }
+
+    .border-left-danger {
+        border-left: 4px solid #e74a3b !important;
+    }
+</style>
+{% endblock %}

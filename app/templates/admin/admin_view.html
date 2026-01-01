@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}पहा (Records) - अॅडमिन पॅनेल{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-primary"><i class="fas fa-eye me-2"></i>सोसायटी रेकॉर्ड्स (View Only)</h2>
+            <p class="text-muted small">येथे तुम्ही सर्व सभासदांची माहिती फक्त पाहू शकता.</p>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Data View Table -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 border-0">
+            <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-table me-2 text-primary"></i>सभासद यादी</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small">
+                        <tr>
+                            <th class="ps-4">अ.नं.</th>
+                            <th>सभासदाचे नाव</th>
+                            <th>इमारत - फ्लॅट</th>
+                            <th>ई-मेल</th>
+                            <th>मोबाईल</th>
+                            <th>नोंदणी दिनांक</th>
+                            <th class="pe-4 text-center">कृती</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if members.items %}
+                        {% for member in members.items %}
+                        <tr>
+                            <td class="ps-4 text-muted small fw-bold">{{ loop.index + (members.page - 1) *
+                                members.per_page }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ member.name }}</div>
+                            </td>
+                            <td>{{ member.building_no }} - {{ member.flat_no }}</td>
+                            <td class="small">{{ member.email }}</td>
+                            <td>{{ member.mobile }}</td>
+                            <td>
+                                <span class="small text-muted">{{ member.created_at.strftime('%d/%m/%Y') if
+                                    member.created_at else '-' }}</span>
+                            </td>
+                            <td class="pe-4 text-center">
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" data-bs-toggle="modal"
+                                    data-bs-target="#viewModal{{ member.id }}">
+                                    <i class="fas fa-eye me-1"></i> पहा
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- View Details Modal -->
+                        <div class="modal fade" id="viewModal{{ member.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-0 shadow rounded-4">
+                                    <div class="modal-header border-0 pb-0">
+                                        <h5 class="modal-title fw-bold text-primary"><i
+                                                class="fas fa-user-circle me-2"></i>सभासद तपशील</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body p-4">
+                                        <div class="row g-3">
+                                            <div class="col-6">
+                                                <label class="small text-muted mb-0">नाव:</label>
+                                                <p class="fw-bold">{{ member.name }}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="small text-muted mb-0">युजरनेम:</label>
+                                                <p class="fw-bold">{{ member.username }}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="small text-muted mb-0">इमारत:</label>
+                                                <p class="fw-bold">{{ member.building_no }}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="small text-muted mb-0">फ्लॅट क्रमांक:</label>
+                                                <p class="fw-bold">{{ member.flat_no }}</p>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="small text-muted mb-0">ई-मेल आयडी:</label>
+                                                <p class="fw-bold">{{ member.email }}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="small text-muted mb-0">मोबाईल नंबर:</label>
+                                                <p class="fw-bold">{{ member.mobile }}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="small text-muted mb-0">स्थिती:</label>
+                                                <p>
+                                                    {% if member.is_active %}
+                                                    <span class="badge bg-success rounded-pill px-3">सक्रिय
+                                                        (Active)</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger rounded-pill px-3">निष्क्रिय
+                                                        (Inactive)</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0 pt-0">
+                                        <button type="button" class="btn btn-secondary rounded-pill px-4"
+                                            data-bs-dismiss="modal">बंद करा</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-database fa-3x text-muted opacity-25 mb-3"></i>
+                                <p class="text-muted">कोणतेही रेकॉर्ड्स सापडले नाहीत.</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if members.pages > 1 %}
+            <div class="card-footer bg-white border-0 py-3">
+                <nav>
+                    <ul class="pagination pagination-sm justify-content-center mb-0">
+                        <li class="page-item {% if not members.has_prev %}disabled{% endif %}">
+                            <a class="page-link rounded-pill px-3 me-2"
+                                href="{{ url_for('admin_view', page=members.prev_num) if members.has_prev else '#' }}">मागे</a>
+                        </li>
+
+                        {% for page_num in members.iter_pages(left_edge=1, right_edge=1, left_current=1,
+                        right_current=2) %}
+                        {% if page_num %}
+                        <li class="page-item {% if page_num == members.page %}active{% endif %}">
+                            <a class="page-link rounded-pill mx-1" href="{{ url_for('admin_view', page=page_num) }}">{{
+                                page_num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link border-0">...</span></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        <li class="page-item {% if not members.has_next %}disabled{% endif %}">
+                            <a class="page-link rounded-pill px-3 ms-2"
+                                href="{{ url_for('admin_view', page=members.next_num) if members.has_next else '#' }}">पुढे</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

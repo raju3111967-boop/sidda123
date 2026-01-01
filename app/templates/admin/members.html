@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}सदस्य व्यवस्थापन - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-users"></i> सदस्य व्यवस्थापन</h2>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="fas fa-list me-2 text-primary"></i>सर्व सदस्य</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if members %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small">
+                    <tr>
+                        <th class="ps-4">अ.नं</th>
+                        <th>नाव</th>
+                        <th>इमारत/फ्लॅट</th>
+                        <th>ईमेल</th>
+                        <th>मोबाईल</th>
+                        <th>युजरनेम</th>
+                        <th>स्थिती</th>
+                        <th class="pe-4 text-center">क्रिया</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                    <tr>
+                        <td class="ps-4">{{ loop.index }}</td>
+                        <td class="fw-bold">{{ member.name }}</td>
+                        <td>{{ member.building_no }} - {{ member.flat_no }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.mobile }}</td>
+                        <td><code class="text-primary">{{ member.username }}</code></td>
+                        <td>
+                            {% if member.is_active %}
+                            <span class="badge bg-success rounded-pill px-3">सक्रिय</span>
+                            {% else %}
+                            <span class="badge bg-danger rounded-pill px-3">निष्क्रिय</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 text-center">
+                            <a href="{{ url_for('admin_member_toggle', id=member.id) }}"
+                                class="btn btn-sm {% if member.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %} rounded-pill px-3">
+                                {% if member.is_active %}
+                                <i class="fas fa-ban me-1"></i> निष्क्रिय करा
+                                {% else %}
+                                <i class="fas fa-check me-1"></i> सक्रिय करा
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4">
+            <div class="alert alert-info border-0 shadow-sm mb-0">
+                <i class="fas fa-info-circle me-2"></i> कोणतेही सदस्य नाहीत
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

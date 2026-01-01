@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}PMC समिती - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-dark">रिडेव्हलपमेंट पी.एम.सी समिती</h2>
+            <p class="text-muted">सोसायटी पुनर्विकास प्रकल्पाचे नियोजन आणि देखरेख समिती</p>
+            <hr class="mx-auto" style="width: 100px; height: 4px; background: var(--secondary-color);">
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {% if members %}
+            {% for m in members %}
+            <div class="col-lg-3 col-md-4 col-sm-6 animate__animated animate__fadeIn">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden text-center member-card hover-lift">
+                    <div class="card-img-top bg-light p-4">
+                        <img src="{{ url_for('static', filename='uploads/pmc/' + m.photo) }}" alt="{{ m.name }}"
+                            class="rounded-circle shadow-sm"
+                            style="width: 120px; height: 120px; object-fit: cover; border: 5px solid white;">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-1 text-dark">{{ m.name }}</h6>
+                        <p class="small text-muted mb-2">इमारत क्र: {{ m.building_no }}</p>
+                        <span class="badge bg-soft-success text-success mb-3 rounded-pill px-3">{{ m.role or 'समिती
+                            सदस्य' }}</span>
+                        <div class="text-muted small">
+                            <i class="fas fa-phone-alt me-2"></i> {{ m.mobile }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-info bg-white border-0 shadow-sm rounded-4 p-5">
+                    <i class="fas fa-info-circle fa-3x text-info mb-3"></i>
+                    <h5>PMC समितीची माहिती लवकरच उपलब्ध होईल.</h5>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .bg-soft-success {
+        background: #e6ffed;
+    }
+
+    .member-card {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

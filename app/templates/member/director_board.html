@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}संचालक मंडळ - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-dark">आमचे संचालक मंडळ</h2>
+            <p class="text-muted">सिध्द गौतम को-ऑप हौसिंग सोसायटी लिमिटेड, नाशिक</p>
+            <hr class="mx-auto" style="width: 100px; height: 4px; background: var(--primary-color);">
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {% for d in directors %}
+            <div class="col-lg-3 col-md-4 col-sm-6 animate__animated animate__fadeInUp">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden text-center member-card hover-lift">
+                    <div class="card-img-top bg-light p-4">
+                        <img src="{{ url_for('static', filename='uploads/directors/' + d.photo) }}" alt="{{ d.name }}"
+                            class="rounded-circle shadow-sm"
+                            style="width: 120px; height: 120px; object-fit: cover; border: 5px solid white;">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-1 text-primary">{{ d.name }}</h6>
+                        <span class="badge bg-soft-primary text-primary mb-3 rounded-pill px-3">{{ d.position }}</span>
+                        <div class="text-muted small">
+                            <i class="fas fa-phone-alt me-2"></i> {{ d.mobile }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .bg-soft-primary {
+        background: #e7f1ff;
+    }
+
+    .member-card {
+        transition: all 0.3s ease;
+    }
+
+    .member-card:hover {
+        transform: translateY(-10px);
+    }
+</style>
+{% endblock %}

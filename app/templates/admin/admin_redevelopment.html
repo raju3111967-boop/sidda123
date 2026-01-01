@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}रिडेव्हलपमेंट माहिती व प्रश्नोत्तरे - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-primary"><i class="fas fa-building me-2"></i>रिडेव्हलपमेंट माहिती व प्रश्नोत्तरे
+            </h2>
+            <hr>
+        </div>
+    </div>
+
+    <!-- Section 1: Redevelopment Information -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-info-circle me-2 text-primary"></i>रिडेव्हलपमेंट
+                        सविस्तर माहिती</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin_redevelopment') }}" method="POST">
+                        <input type="hidden" name="action" value="update_info">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">रिडेव्हलपमेंट विषय</label>
+                            <input type="text" name="redevelopment_title" class="form-control rounded-3"
+                                value="{{ info.title if info else '' }}" required
+                                placeholder="उदा. प्रकल्प प्रगती अहवाल">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">रिडेव्हलपमेंट संदर्भातील सविस्तर माहिती</label>
+                            <textarea name="redevelopment_details" class="form-control rounded-3" rows="10" required
+                                placeholder="येथे सविस्तर माहिती लिहा...">{{ info.details if info else '' }}</textarea>
+                            <div class="form-text text-muted small mt-2">ही माहिती सर्व सदस्यांना त्यांच्या डॅशबोर्डवर
+                                दिसेल.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm">
+                                <i class="fas fa-save me-2"></i> {{ 'अद्ययावत करा (Update)' if info else 'जतन करा
+                                (Save)' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Member Questions & Admin Replies -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-question-circle me-2 text-warning"></i>सभासद
+                        विचारलेले प्रश्न आणि उत्तरे</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small">
+                                <tr>
+                                    <th class="ps-4">सभासदाचे नाव</th>
+                                    <th>घर क्र.</th>
+                                    <th style="width: 30%;">प्रश्न (Question)</th>
+                                    <th>दिनांक</th>
+                                    <th style="width: 30%;">अॅडमिन उत्तर (Reply)</th>
+                                    <th>स्थिती</th>
+                                    <th class="pe-4 text-center">कृती</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if questions %}
+                                {% for q in questions %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">{{ q.member.name }}</div>
+                                    </td>
+                                    <td>{{ q.member.building_no }}-{{ q.member.flat_no }}</td>
+                                    <td>
+                                        <p class="small mb-0 text-dark">{{ q.question_text }}</p>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ q.question_date.strftime('%d/%m/%Y') }}</small>
+                                    </td>
+                                    <td>
+                                        {% if q.replies %}
+                                        <p class="small mb-0 text-success fw-bold">{{ q.replies[0].reply_text }}</p>
+                                        <small class="text-muted" style="font-size: 0.7rem;">उत्तर तारीख: {{
+                                            q.replies[0].reply_date.strftime('%d/%m/%Y') }}</small>
+                                        {% else %}
+                                        <span class="text-muted small">प्रतीक्षेत...</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge rounded-pill px-3 {% if q.status == 'उत्तर दिले' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ q.status }}
+                                        </span>
+                                    </td>
+                                    <td class="pe-4 text-center">
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                            data-bs-toggle="modal" data-bs-target="#replyModal{{ q.id }}">
+                                            <i class="fas fa-reply me-1"></i> {{ 'Edit Reply' if q.replies else 'Reply'
+                                            }}
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Reply Modal -->
+                                <div class="modal fade" id="replyModal{{ q.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow rounded-4">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-bold">उत्तर द्या (Reply)</h5>
+                                                <button type="button" class="btn-close"
+                                                    data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form action="{{ url_for('admin_redevelopment') }}" method="POST">
+                                                <input type="hidden" name="action" value="reply_question">
+                                                <input type="hidden" name="question_id" value="{{ q.id }}">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="small text-muted mb-1">सभासदाचा प्रश्न:</label>
+                                                        <div class="p-3 bg-light rounded-3 small">{{ q.question_text }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label small fw-bold">तुमचे उत्तर</label>
+                                                        <textarea name="reply_text" class="form-control rounded-3"
+                                                            rows="5"
+                                                            required>{{ q.replies[0].reply_text if q.replies else '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-0 pt-0">
+                                                    <button type="button" class="btn btn-light rounded-pill px-4"
+                                                        data-bs-dismiss="modal">रद्द करा</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary rounded-pill px-4 shadow">जतन
+                                                        करा</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <i class="fas fa-comment-slash fa-3x text-muted opacity-25 mb-3"></i>
+                                        <p class="text-muted">अद्याप विचारलेले कोणतेही प्रश्न नाहीत.</p>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

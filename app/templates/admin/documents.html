@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}दस्तऐवज व्यवस्थापन - अॅडमिन पॅनेल{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-primary"><i class="fas fa-file-alt me-2"></i>दस्तऐवज व्यवस्थापन</h2>
+            <p class="text-muted small">येथे तुम्ही सोसायटीचे दस्तऐवज (PDF, DOC, JPG, PNG) अपलोड करू शकता.</p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upload Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-upload me-2 text-primary"></i>नवीन दस्तऐवज अपलोड
+                        करा</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin_documents') }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">शीर्षक (Title)</label>
+                            <input type="text" name="title" class="form-control" placeholder="उदा. सभेचे कार्यवृत्त"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">माहिती (Description)</label>
+                            <textarea name="description" class="form-control" rows="3"
+                                placeholder="दस्तऐवजाबद्दल थोडक्यात माहिती..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">प्रकार (Type)</label>
+                            <select name="doc_type" class="form-control" required>
+                                <option value="सभेचे कार्यवृत्त">सभेचे कार्यवृत्त (Minutes)</option>
+                                <option value="सूचना">सूचना (Notice)</option>
+                                <option value="प्रमाणपत्र">प्रमाणपत्र (Certificate)</option>
+                                <option value="इतर">इतर (Other)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">फाईल निवडा (PDF, DOC, JPG, PNG)</label>
+                            <input type="file" name="document" class="form-control"
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>अपलोड करा
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents List -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-list me-2 text-primary"></i>अपलोड केलेले दस्तऐवज
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small">
+                                <tr>
+                                    <th class="ps-4">शीर्षक</th>
+                                    <th>प्रकार</th>
+                                    <th>तारीख</th>
+                                    <th class="pe-4 text-center">कृती</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doc in documents %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">{{ doc.title }}</div>
+                                        <div class="small text-muted text-truncate" style="max-width: 200px;">{{
+                                            doc.description or '' }}</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">{{ doc.doc_type }}</span></td>
+                                    <td class="small">{{ doc.uploaded_at.strftime('%d/%m/%Y') }}</td>
+                                    <td class="pe-4 text-center">
+                                        <a href="{{ url_for('download_document', id=doc.id) }}"
+                                            class="btn btn-sm btn-outline-success rounded-pill px-3 me-1">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin_document_delete', id=doc.id) }}"
+                                            class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                            onclick="return confirm('तुम्हाला खात्री आहे की तुम्ही हा दस्तऐवज हटवू इच्छिता?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <i class="fas fa-file-invoice fa-3x mb-3 opacity-25"></i>
+                                        <p>अद्याप कोणतेही दस्तऐवज अपलोड केलेले नाहीत.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

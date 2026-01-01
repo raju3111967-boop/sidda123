@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}सेटिंग - अॅडमिन पॅनेल{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-primary"><i class="fas fa-cog me-2"></i>सोसायटी सेटिंग</h2>
+            <p class="text-muted small">येथे तुम्ही तुमची सोसायटी प्रोफाइल आणि मॉड्युल्स व्यवस्थापित करू शकता.</p>
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Basic Info Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-info-circle me-2 text-primary"></i>कार्यालयीन
+                        मूलभूत माहिती</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin_settings') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">सोसायटीचे पूर्ण नाव</label>
+                            <input type="text" name="society_name" class="form-control"
+                                value="सिध्द गौतम को-ऑप हौसिंग सोसायटी लि." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">पत्ता</label>
+                            <textarea name="address" class="form-control"
+                                rows="2">429/1अ मानेकशा नगर, द्वारका, नाशिक शहर – 422011</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">रजिस्ट्रेशन नंबर</label>
+                                <input type="text" name="reg_no" class="form-control" value="NSK/HSG(T.C)/507/1987">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">संपर्क क्रमांक</label>
+                                <input type="text" name="contact" class="form-control" value="9423557744">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ई-मेल आयडी</label>
+                            <input type="email" name="email" class="form-control" value="info@siddhagautam.com">
+                        </div>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2">
+                            <i class="fas fa-save me-2"></i>माहिती अपडेट करा
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-th-large me-2 text-primary"></i>मॉड्यूल्स
+                        (Enable/Disable)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div
+                            class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-0">
+                            <div>
+                                <h6 class="mb-0 fw-bold">AI असिस्टंट</h6>
+                                <p class="small text-muted mb-0">तक्रार वगैरेसाठी AI सुचवणारे उत्तर सक्षम करा.</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                        <div
+                            class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-0">
+                            <div>
+                                <h6 class="mb-0 fw-bold">रिडेव्हलपमेंट अपडेट्स</h6>
+                                <p class="small text-muted mb-0">सदस्यांना रिडेव्हलपमेंट विभाग दिसू द्या.</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                        <div
+                            class="list-group-item d-flex justify-content-between align-items-center py-3 px-0 border-0">
+                            <div>
+                                <h6 class="mb-0 fw-bold">ऑनलाईन नोंदणी</h6>
+                                <p class="small text-muted mb-1">नवीन सदस्यांची स्वतःहून नोंदणी सुरू ठेवा.</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4 mb-0 small">
+                        <i class="fas fa-info-circle me-2"></i>टीप: हे विभाग सध्या कॉन्फिगरेशनसाठी आहेत, पुढील
+                        अपडेटमध्ये अधिक पर्याय जोडले जातील.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future ready placeholder -->
+            <div class="card shadow-sm border-0 rounded-4 mt-4 bg-light border-dashed">
+                <div class="card-body text-center py-4">
+                    <i class="fas fa-plus-circle fa-2x text-muted mb-2"></i>
+                    <h6 class="text-muted mb-0">नवीन फीचर्स लवकरच येत आहेत...</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

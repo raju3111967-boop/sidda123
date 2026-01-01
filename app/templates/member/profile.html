@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block title %}माझी प्रोफाईल - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: #f4f7f6; min-height: 80vh;">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar: Premium Profile Sidebar -->
+            <div class="col-lg-4 mb-4">
+                <div class="profile-card shadow-lg border-0">
+                    <div class="profile-sidebar-header">
+                        <div class="profile-avatar-wrapper mt-2">
+                            <div class="profile-avatar">
+                                {{ member.avatar_char }}
+                            </div>
+                        </div>
+                        <h4 class="mb-1 fw-bold">{{ member.name }}</h4>
+                        <p class="mb-0 opacity-75">इमारत: {{ member.building_no }} | फ्लॅट: {{ member.flat_no }}</p>
+                    </div>
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                        <button class="profile-nav-link active" id="v-pills-profile-tab" data-bs-toggle="pill"
+                            data-bs-target="#v-pills-profile" type="button" role="tab">
+                            <i class="fas fa-id-card-alt me-2 text-primary"></i> वैयक्तिक माहिती
+                        </button>
+                        <button class="profile-nav-link" id="v-pills-password-tab" data-bs-toggle="pill"
+                            data-bs-target="#v-pills-password" type="button" role="tab">
+                            <i class="fas fa-user-shield me-2 text-warning"></i> सुरक्षा व पासवर्ड
+                        </button>
+                        <button class="profile-nav-link border-bottom-0" id="v-pills-questions-tab"
+                            data-bs-toggle="pill" data-bs-target="#v-pills-questions" type="button" role="tab">
+                            <i class="fas fa-comment-dots me-2 text-success"></i> माझे प्रश्न व उत्तरे
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="profile-card mt-4 p-4 border-0 shadow-sm bg-white">
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">थोडक्यात माहिती</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary small">एकूण प्रश्न:</span>
+                        <span class="fw-bold">{{ questions|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary small">सदस्यत्व दिनांक:</span>
+                        <span class="fw-bold">{{ member.created_at.strftime('%d/%m/%Y') if member.created_at else 'N/A'
+                            }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area: Profile Tabs -->
+            <div class="col-lg-8">
+                <div class="tab-content" id="v-pills-tabContent">
+
+                    <!-- Tab 1: Personal Info -->
+                    <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel">
+                        <div class="profile-card p-4 p-md-5 bg-white shadow-sm border-0">
+                            <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+                                <i class="fas fa-user-edit text-primary h4 mb-0 me-3"></i>
+                                <h4 class="mb-0 fw-bold">वैयक्तिक माहिती अपडेट करा</h4>
+                            </div>
+                            <form action="{{ url_for('update_profile') }}" method="POST">
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold small text-muted">पूर्ण नाव</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-user text-secondary"></i></span>
+                                            <input type="text" name="name" class="form-control bg-light border-0"
+                                                value="{{ member.name }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">इमारत क्रमांक</label>
+                                        <input type="text" name="building_no" class="form-control bg-light border-0"
+                                            value="{{ member.building_no }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">फ्लॅट क्रमांक</label>
+                                        <input type="text" name="flat_no" class="form-control bg-light border-0"
+                                            value="{{ member.flat_no }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">ई-मेल आयडी</label>
+                                        <input type="email" name="email" class="form-control bg-light border-0"
+                                            value="{{ member.email }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-muted">मोबाईल क्रमांक</label>
+                                        <input type="text" name="mobile" class="form-control bg-light border-0"
+                                            value="{{ member.mobile }}" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold small text-muted">युजर नेम</label>
+                                        <input type="text" name="username" class="form-control bg-light border-0"
+                                            value="{{ member.username }}" required>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-2">
+                                    <button type="submit"
+                                        class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold">
+                                        बदल जतन करा <i class="fas fa-arrow-right ms-2 small"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Security & Password -->
+                    <div class="tab-pane fade" id="v-pills-password" role="tabpanel">
+                        <div class="profile-card p-4 p-md-5 bg-white shadow-sm border-0">
+                            <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+                                <i class="fas fa-shield-alt text-warning h4 mb-0 me-3"></i>
+                                <h4 class="mb-0 fw-bold">सुरक्षा व पासवर्ड व्यवस्थापन</h4>
+                            </div>
+                            <div class="alert alert-warning border-0 bg-warning bg-opacity-10 mb-4 p-3 rounded-4">
+                                <div class="d-flex">
+                                    <i class="fas fa-exclamation-triangle mt-1 me-3"></i>
+                                    <small>खात्याची सुरक्षा राखण्यासाठी पासवर्ड वारंवार बदलणे उत्तम असते. नवीन पासवर्ड
+                                        संस्मरणीय पण मजबूत असावा.</small>
+                                </div>
+                            </div>
+                            <form action="{{ url_for('change_password') }}" method="POST" id="passwordForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-muted">नवीन पासवर्ड</label>
+                                    <input type="password" name="new_password"
+                                        class="form-control bg-light border-0 p-3 rounded-3" id="new_password" required
+                                        minlength="6" placeholder="कमीतकमी ६ अक्षरे टाका...">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small text-muted">पासवर्डची पुष्टी करा</label>
+                                    <input type="password" name="confirm_password"
+                                        class="form-control bg-light border-0 p-3 rounded-3" id="confirm_password"
+                                        required placeholder="पासवर्ड पुन्हा टाका...">
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit"
+                                        class="btn btn-warning btn-lg rounded-pill px-5 shadow-sm fw-bold">
+                                        पासवर्ड अपडेट करा <i class="fas fa-lock ms-2 small"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Q&A Section (More like a conversation) -->
+                    <div class="tab-pane fade" id="v-pills-questions" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0 fw-bold"><i class="fas fa-comments text-success me-2"></i>माझे प्रश्न व
+                                उत्तरे</h4>
+                            <button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal"
+                                data-bs-target="#askQuestionModal">
+                                <i class="fas fa-plus me-1"></i> प्रश्न विचारा
+                            </button>
+                        </div>
+
+                        {% if questions %}
+                        {% for q in questions %}
+                        <div
+                            class="profile-card bg-white p-4 mb-4 border-0 shadow-sm animate__animated animate__fadeInUp">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-2 me-3">
+                                        <i class="fas fa-question h5 mb-0"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ q.question_text }}</h6>
+                                        <small class="text-muted"><i class="far fa-calendar-alt me-1"></i>{{
+                                            q.question_date.strftime('%d %b %Y') }}</small>
+                                    </div>
+                                </div>
+                                <span
+                                    class="badge {% if q.status == 'उत्तर दिले' %}bg-success{% else %}bg-warning{% endif %} rounded-pill px-3 py-2">
+                                    {{ q.status }}
+                                </span>
+                            </div>
+
+                            {% if q.replies %}
+                            <div class="mt-4 ms-4 p-3 bg-light rounded-4 border-start border-4 border-success">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-reply-all text-success me-2"></i>
+                                    <span class="fw-bold small">अॅडमिन कडून उत्तर:</span>
+                                </div>
+                                {% for r in q.replies %}
+                                <div class="mb-2">
+                                    <p class="mb-1 text-dark">{{ r.reply_text }}</p>
+                                    <small class="text-muted small fw-normal">{{ r.reply_date.strftime('%d/%m/%Y %H:%M')
+                                        }}</small>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="mt-3 ms-4 p-2 text-muted italic small">
+                                <i class="fas fa-hourglass-half me-2"></i> तुमच्या प्रश्नाचे उत्तर लवकरच दिले जाईल...
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="profile-card bg-white p-5 text-center border-0 shadow-sm">
+                            <img src="https://cdni.iconscout.com/illustration/premium/thumb/no-message-found-4439058-3682914.png"
+                                alt="No data" style="width: 200px; opacity: 0.5;">
+                            <p class="text-muted mt-4">तुम्ही अद्याप कोणता ही प्रश्न विचारलेला नाही.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: Ask Question -->
+<div class="modal fade" id="askQuestionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold">सोसायटी अॅडमिनला प्रश्न विचारा</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('ask_question') }}" method="POST">
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-4">तुमचा प्रश्न स्पष्ट आणि थोडक्यात लिहा जेणेकरून अॅडमिनला उत्तर
+                        देण्यास सोपे होईल.</p>
+                    <div class="mb-3">
+                        <textarea name="question_text" class="form-control bg-light border-0 p-3 rounded-4" rows="5"
+                            placeholder="उदा. पार्किंगच्या सुविधेबाबत विचारणा किंवा मेंटेनन्स बिलाबाबत माहिती..."
+                            required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-light">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none"
+                        data-bs-dismiss="modal">कॅन्सल</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow">प्रश्न पाठवा <i
+                            class="fas fa-paper-plane ms-2 small"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tab Persistence
+    $(document).ready(function () {
+        $('button[data-bs-toggle="pill"]').on('show.bs.tab', function (e) {
+            localStorage.setItem('activeProfileTab', $(e.target).attr('data-bs-target'));
+        });
+        var activeTab = localStorage.getItem('activeProfileTab');
+        if (activeTab) {
+            $('#v-pills-tab button[data-bs-target="' + activeTab + '"]').tab('show');
+        }
+    });
+
+    // Password Validation
+    document.getElementById('passwordForm').addEventListener('submit', function (e) {
+        const pass = document.getElementById('new_password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        if (pass !== confirm) {
+            e.preventDefault();
+            alert('पासवर्ड जुळत नाहीत! कृपया पुन्हा तपासा.');
+        }
+    });
+</script>
+{% endblock %}

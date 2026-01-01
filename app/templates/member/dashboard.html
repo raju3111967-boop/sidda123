@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}डॅशबोर्ड - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<section class="hero-section" style="padding: 3rem 0;">
+    <div class="container">
+        <h2><i class="fas fa-home"></i> स्वागत आहे, {{ session.name }}!</h2>
+        <p class="lead">सिध्द गौतम को-ऑप हौसिंग सोसायटी लि.</p>
+    </div>
+</section>
+
+<!-- Main Dashboard -->
+<div class="container mt-2">
+    <div class="alert alert-warning py-1 px-3 small d-inline-block">
+        <i class="fas fa-bug"></i> AI Widget Loaded for Member (Debug Mode)
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <!-- संचालक मंडळ -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h3 class="mb-4"><i class="fas fa-user-tie"></i> संचालक मंडळ</h3>
+            </div>
+            {% for director in directors[:3] %}
+            <div class="col-md-4 mb-4">
+                <div class="card director-card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-box mb-3">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="position">{{ director.position }}</div>
+                        <div class="name">{{ director.name }}</div>
+                        <div class="mobile">
+                            <i class="fas fa-mobile-alt"></i> {{ director.mobile }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- रिडेव्हलपमेंट प्रोग्रेस -->
+        {% if redevelopment %}
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-building"></i> रिडेव्हलपमेंट प्रगती</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>{{ redevelopment.title }}</h6>
+                        <p>{{ redevelopment.description }}</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar"
+                                style="width: {{ redevelopment.progress_percentage }}%"
+                                aria-valuenow="{{ redevelopment.progress_percentage }}" aria-valuemin="0"
+                                aria-valuemax="100">
+                                {{ redevelopment.progress_percentage }}%
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i>
+                            {{ redevelopment.update_date.strftime('%d/%m/%Y') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ताज्या सूचना -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-bullhorn"></i> ताज्या सूचना</h5>
+                        <a href="{{ url_for('member_notices') }}" class="btn btn-sm btn-outline-primary">
+                            सर्व पहा <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        {% if notices %}
+                        {% for notice in notices %}
+                        <div class="notice-card card mb-3">
+                            <div class="card-body">
+                                <h6 class="notice-title">{{ notice.title }}</h6>
+                                <p class="mb-2">{{ notice.content }}</p>
+                                <small class="notice-date">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ notice.created_at.strftime('%d/%m/%Y %I:%M %p') }}
+                                </small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> सध्या कोणत्याही सूचना नाहीत
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h4 class="mb-4"><i class="fas fa-bolt"></i> द्रुत क्रिया</h4>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{{ url_for('member_complaints') }}" class="text-decoration-none">
+                    <div class="card stat-card">
+                        <div class="card-body text-center">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <h6>तक्रार नोंदवा</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{{ url_for('member_documents') }}" class="text-decoration-none">
+                    <div class="card stat-card">
+                        <div class="card-body text-center">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-file-download"></i>
+                            </div>
+                            <h6>दस्तऐवज पहा</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{{ url_for('member_redevelopment') }}" class="text-decoration-none">
+                    <div class="card stat-card">
+                        <div class="card-body text-center">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <h6>रिडेव्हलपमेंट</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <a href="{{ url_for('member_profile') }}" class="text-decoration-none">
+                    <div class="card stat-card">
+                        <div class="card-body text-center">
+                            <div class="icon-box mb-3">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <h6>प्रोफाईल संपादित करा</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}सूचना - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4"><i class="fas fa-bullhorn"></i> सूचना फलक</h2>
+
+        <div class="row">
+            <div class="col-12">
+                {% if notices %}
+                {% for notice in notices %}
+                <div class="card notice-card mb-4">
+                    <div class="card-body">
+                        <h5 class="notice-title">{{ notice.title }}</h5>
+                        <p class="mb-3">{{ notice.content }}</p>
+                        <small class="notice-date">
+                            <i class="fas fa-calendar"></i> {{ notice.created_at.strftime('%d/%m/%Y %I:%M %p') }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> सध्या कोणत्याही सूचना नाहीत
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

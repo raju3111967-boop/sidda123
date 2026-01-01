@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}ॲडमिन डॅशबोर्ड - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <!-- Animated Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-gradient-primary text-white">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-users-cog fa-2x mb-2 opacity-50"></i>
+                    <h3 class="fw-bold mb-0 counter">{{ stats.total_members }}</h3>
+                    <p class="small mb-0 opacity-75">एकूण सभासद</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-gradient-success text-white">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-user-check fa-2x mb-2 opacity-50"></i>
+                    <h3 class="fw-bold mb-0">{{ stats.active_members }}</h3>
+                    <p class="small mb-0 opacity-75">सक्रीय सभासद</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-gradient-danger text-white">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-envelope-open-text fa-2x mb-2 opacity-50"></i>
+                    <h3 class="fw-bold mb-0">{{ stats.pending_complaints }}</h3>
+                    <p class="small mb-0 opacity-75">प्रलंबित तक्रारी</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-gradient-info text-white">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-question-circle fa-2x mb-2 opacity-50"></i>
+                    <h3 class="fw-bold mb-0">{{ stats.pending_questions }}</h3>
+                    <p class="small mb-0 opacity-75">प्रलंबित प्रश्न</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Management Table Section -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-id-card me-2 text-primary"></i>सभासद यादी</h5>
+            <div class="d-flex gap-2">
+                <input type="text" id="memberSearch" class="form-control form-control-sm rounded-pill px-3"
+                    placeholder="नाव किंवा घर क्रमांक शोधा...">
+                <button class="btn btn-sm btn-primary rounded-pill px-3" data-bs-toggle="modal"
+                    data-bs-target="#bulkNoticeModal">
+                    <i class="fas fa-bullhorn me-1"></i> समूह सूचना
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="membersTable">
+                    <thead class="bg-light text-muted small">
+                        <tr>
+                            <th class="ps-4">अ.नं.</th>
+                            <th>सभासदाचे नाव</th>
+                            <th>इमारत/फ्लॅट</th>
+                            <th>संपर्क माहिती</th>
+                            <th>युजरनेम/पास</th>
+                            <th>स्थिती</th>
+                            <th class="pe-4 text-center">कृती (Action)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in members %}
+                        <tr>
+                            <td class="ps-4 text-muted">{{ loop.index }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm me-3 bg-secondary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center rounded-circle"
+                                        style="width: 35px; height: 35px;">
+                                        {{ m.avatar_char }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ m.name }}</div>
+                                        <small class="text-muted">नोंदणी: {{ m.created_at.strftime('%d/%m/%y')
+                                            if m.created_at else 'N/A' }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small fw-bold">{{ m.building_no }}</div>
+                                <div class="small text-muted">फ्लॅट नं: {{ m.flat_no }}</div>
+                            </td>
+                            <td>
+                                <div class="small"><i class="far fa-envelope me-1"></i> {{ m.email }}</div>
+                                <div class="small"><i class="fas fa-phone-alt me-1"></i> {{ m.mobile }}</div>
+                            </td>
+                            <td>
+                                <div class="small text-primary fw-bold">{{ m.username }}</div>
+                                <div class="small text-muted">**********</div>
+                            </td>
+                            <td>
+                                <span
+                                    class="badge {% if m.is_active %}bg-success{% else %}bg-danger{% endif %} rounded-pill px-3">
+                                    {{ 'सक्रीय' if m.is_active else 'निष्क्रिय' }}
+                                </span>
+                            </td>
+                            <td class="pe-4 text-center">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-info" title="पहा"
+                                        onclick="viewMember({{ m.id }})"><i class="fas fa-eye"></i></button>
+                                    <a href="{{ url_for('admin_member_edit', id=m.id) }}"
+                                        class="btn btn-sm btn-outline-primary" title="संपादित करा"><i
+                                            class="fas fa-edit"></i></a>
+                                    <a href="{{ url_for('admin_member_toggle', id=m.id) }}"
+                                        class="btn btn-sm {% if m.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}"
+                                        title="{{ 'Disable' if m.is_active else 'Enable' }}">
+                                        <i
+                                            class="fas {% if m.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-warning" title="सूचना पाठवा"
+                                        data-bs-toggle="modal" data-bs-target="#personalNoticeModal"
+                                        onclick="setNoticeTarget({{ m.id }}, '{{ m.name }}')">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Personal Notice -->
+    <div class="modal fade" id="personalNoticeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">वैयक्तिक सूचना पाठवा</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ url_for('send_specific_notice') }}" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="member_id" id="noticeMemberId">
+                        <div class="mb-3">
+                            <label class="small text-muted mb-1">प्रति:</label>
+                            <div id="noticeMemberName" class="fw-bold text-primary"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">सूचनेचा विषय</label>
+                            <input type="text" name="title" class="form-control" required
+                                placeholder="उदा. मेंटेनन्स थकीत बाकी...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">तपशील</label>
+                            <textarea name="content" class="form-control" rows="4" required
+                                placeholder="सूचनेचा सविस्तर तपशील मराठीत टाका..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">बंद करा</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow">सूचना पाठवा</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Bulk Notice (Group) -->
+    <div class="modal fade" id="bulkNoticeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">सर्व सभासदांना सूचना</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ url_for('admin_notices') }}" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small">सूचनेचा विषय</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">तपशील</label>
+                            <textarea name="content" class="form-control" rows="5" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">बंद करा</button>
+                        <button type="submit" class="btn btn-success px-4 shadow">प्रसिद्ध करा</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search functionality
+    document.getElementById('memberSearch').addEventListener('keyup', function () {
+        let searchValue = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#membersTable tbody tr');
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(searchValue) ? '' : 'none';
+        });
+    });
+
+    function setNoticeTarget(id, name) {
+        document.getElementById('noticeMemberId').value = id;
+        document.getElementById('noticeMemberName').innerText = name;
+    }
+
+    function viewMember(id) {
+        alert("सभासद तपशील ID: " + id + "\n(हा विभाग लवकरच कार्यान्वित होईल)");
+    }
+</script>
+{% endblock %}

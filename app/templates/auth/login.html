@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}लॉगिन - सिध्द गौतम सोसायटी{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> लॉगिन करा</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-user"></i> युजरनेम
+                                </label>
+                                <input type="text" class="form-control" id="username" name="username"
+                                    placeholder="तुमचे युजरनेम टाका" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock"></i> पासवर्ड
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="तुमचा पासवर्ड टाका" required>
+                            </div>
+
+                            <div class="d-grid gap-2 mb-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt"></i> लॉगिन करा
+                                </button>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="mb-0">
+                                    नवीन सदस्य आहात?
+                                    <a href="{{ url_for('register') }}" class="text-decoration-none">
+                                        <strong>येथे नोंदणी करा</strong>
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> डिफॉल्ट अॅडमिन लॉगिन:</h6>
+                            <p class="mb-1"><strong>युजरनेम:</strong> admin</p>
+                            <p class="mb-0"><strong>पासवर्ड:</strong> 123</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Form validation removed for direct submission -->
+{% endblock %}
