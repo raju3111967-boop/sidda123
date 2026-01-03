@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollToBottom();
 
         try {
-            const response = await fetch('/api/ai/chat', {
+            const response = await fetch('/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (indicator) indicator.remove();
 
             // Add AI Message with Category
-            addMessage(data.answer, 'ai', data.timestamp, data.type, data.category);
+            // Backend now provides 'reply' instead of 'answer'
+            addMessage(data.reply, 'ai', new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), data.type || 'AI_Info', data.category);
             scrollToBottom();
 
         } catch (error) {

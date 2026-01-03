@@ -4,19 +4,16 @@ AI Helper Module - Google Gemini Integration
 Developer: श्री. राजेश भालेराव
 """
 
-import google.generativeai as genai
+from google.genai import Client
 import os
 from typing import Dict, List, Optional
 
 # Gemini API Configuration
-# Note: तुम्हाला तुमची स्वतःची API key वापरावी लागेल
-# https://makersuite.google.com/app/apikey येथून मिळवा
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'YOUR_API_KEY_HERE')
 
 # Initialize Gemini
 try:
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-pro')
+    client = Client(api_key=GEMINI_API_KEY)
     AI_ENABLED = True
 except Exception as e:
     print(f"⚠️ AI Features disabled: {e}")
@@ -109,7 +106,7 @@ class SocietyAI:
 
             Output ONLY the Category Name (e.g. "Director"). Do not write anything else.
             """
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             formatted = response.text.strip().replace("Category: ", "").replace(".", "")
             # Mapping back to simple keys
             if "Director" in formatted: return "Director"
@@ -152,7 +149,7 @@ class SocietyAI:
             फक्त या तीन ओळी द्या.
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             result_text = response.text.strip()
             
             # Parse response
@@ -213,7 +210,7 @@ class SocietyAI:
             - उत्तर नम्र पण स्पष्ट असावे.
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             return response.text.strip()
             
         except Exception as e:
@@ -244,7 +241,7 @@ class SocietyAI:
             4. **Disclaimer**: End with the standard disclaimer: "ही माहिती महाराष्ट्र सहकारी संस्था अधिनियम, 1960 आणि मॉडेल उपविधींवर आधारित सामान्य मार्गदर्शन आहे..."
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             return response.text.strip()
             
         except Exception as e:
@@ -276,7 +273,7 @@ class SocietyAI:
             - Ensure the DISCLAIMER is present at the end.
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             return response.text.strip()
 
         except Exception as e:
@@ -303,7 +300,7 @@ class SocietyAI:
             {notices_text}
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             return response.text.strip()
             
         except Exception as e:
@@ -333,7 +330,7 @@ class SocietyAI:
             एक संक्षिप्त विश्लेषण (मराठीत) द्या.
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             return response.text.strip()
             
         except Exception as e:
@@ -365,7 +362,7 @@ class SocietyAI:
             Agenda (मराठीत) तयार करा.
             """
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model='gemini-1.5-flash', contents=prompt)
             return response.text.strip()
             
         except Exception as e:
@@ -377,7 +374,7 @@ class SocietyAI:
         """AI सुविधेची स्थिती"""
         return {
             'enabled': AI_ENABLED,
-            'model': 'gemini-pro' if AI_ENABLED else None,
+            'model': 'gemini-1.5-flash' if AI_ENABLED else None,
             'features': [
                 'Legal Knowledge Base (Act 1960)',
                 'Model Bye-laws Support',

@@ -4,6 +4,20 @@ Flask मुख्य ऍप्लिकेशन फाईल
 Developer: श्री. राजेश भालेराव
 """
 
+import os
+
+AI_ENABLED = False
+model = None
+
+try:
+    from google.genai import Client
+    # We just initialize the client to verify connectivity
+    client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    AI_ENABLED = True
+    print("🤖 AI Features Enabled (Gemini Connected)")
+except Exception as e:
+    print("⚠️ AI Features Disabled:", e)
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -986,149 +1000,35 @@ def member_pmc():
 # AI ASSISTANT API & ROUTES (AI असिस्टंट)
 # =====================================================
 
-@app.route('/api/ai/chat', methods=['POST'])
+@app.route("/ai/chat", methods=["POST"])
 def ai_chat():
-    """सदस्यांच्या प्रश्नांना AI द्वारे उत्तर देणे (Strict Intent-Based)"""
     data = request.json
-    question = data.get('question', '').strip()
-    # Topic from UI can be a hint, but we will rely on server-side intent detection for safety
-    topic_hint = data.get('topic', 'all') 
-    member_id = session.get('user_id')
-    
-    if not question:
-        return jsonify({'answer': 'कृपया तुमचा प्रश्न विचारा.', 'type': 'error'})
+    user_question = data.get("question", "")
 
-    # 1. Sensitive Keyword Detection
-    sensitive_keywords = ['कोर्ट', 'केस', 'स्थगिती', 'दावा', 'अपील', 'नोटीस पाठवा', 'वकील']
-    is_sensitive = any(kw in question.lower() for kw in sensitive_keywords)
-    
-    if is_sensitive:
-        answer = "⚠️ **Admin Approval Required**\n\nतुमचा प्रश्न कायदेशीररित्या संवेदनशील (Sensitive Legal Matter) आहे. यासाठी ॲडमिनशी थेट संपर्क साधा किंवा लेखी तक्रार द्या."
-        res_type = 'Sensitive_Alert'
-        category = 'High Risk'
-    else:
-        # 2. Strict Intent Detection
-        if ai_assistant:
-            intent = ai_assistant.detect_intent(question)
-            print(f"DEBUG: Question='{question}', Intent='{intent}'")
-        else:
-            intent = 'General'
+    if not user_question:
+        return jsonify({"reply": "कृपया प्रश्न लिहा."})
 
-        answer = ""
-        res_type = 'AI_Gen'
-        category = intent
+    # Legal-safe prompt
+    system_prompt = f"""
+    तू हौसिंग सोसायटीसाठी AI सहाय्यक आहेस.
+    उत्तर मराठीत द्यायचे आहे.
+    अंतिम कायदेशीर सल्ला देऊ नकोस.
+    गरज असल्यास Disclaimer द्यायचा.
 
-        # 3. Data Retrieval & Strict Content Filtering
-        if intent == 'Director':
-            # Fetch ONLY Director Data
-            directors = Director.query.all()
-            if directors:
-                dir_list = "\n".join([f"- {d.name} ({d.position})" for d in directors])
-                info_context = f"सोसायटीचे विद्यमान संचालक मंडळ:\n{dir_list}"
-                if ai_assistant:
-                    answer = ai_assistant.humanize_society_info(question, info_context, "Society Records - Directors")
-                else:
-                    answer = info_context
-                res_type = 'Society_DB'
-            else:
-                answer = "सध्या संचालक सदस्यांची यादी सोसायटी रेकॉर्डमध्ये उपलब्ध नाही."
-                res_type = 'Not_Found'
+    प्रश्न: {user_question}
+    """
 
-        elif intent == 'Notice':
-            # Fetch ONLY Notices
-            keywords = [kw for kw in question.lower().split() if len(kw) > 2]
-            found_data = None
-            notices = Notice.query.filter_by(is_active=True).all()
-            for n in notices:
-                if any(kw in n.title.lower() or kw in n.content.lower() for kw in keywords):
-                    found_data = f"📢 **सूचना:**\n{n.title}\n{n.content[:400]}"
-                    break
-            
-            if found_data:
-                if ai_assistant:
-                    answer = ai_assistant.humanize_society_info(question, found_data, "Society Notices")
-                else:
-                    answer = found_data
-                res_type = 'Society_DB'
-            else:
-                answer = "या विषयावर सध्या कोणतीही सक्रिय सूचना उपलब्ध नाही."
-                res_type = 'Not_Found'
+    try:
+        response = model.generate_content(system_prompt)
+        answer = response.text
 
-        elif intent == 'Redevelopment':
-            # Fetch ONLY Redevelopment Data
-            info = RedevelopmentInfo.query.first()
-            updates = RedevelopmentUpdate.query.order_by(RedevelopmentUpdate.update_date.desc()).limit(2).all()
-            
-            context_parts = []
-            if info: context_parts.append(f"Project: {info.title}\nDetails: {info.details}")
-            if updates:
-                for u in updates:
-                    context_parts.append(f"Update ({u.update_date.strftime('%d-%m-%Y')}): {u.title} - {u.description}")
-            
-            if context_parts:
-                full_context = "\n\n".join(context_parts)
-                if ai_assistant:
-                    answer = ai_assistant.humanize_society_info(question, full_context, "Redevelopment Records")
-                else:
-                    answer = full_context
-                res_type = 'Society_DB'
-            else:
-                 answer = "रिडेव्हलपमेंट संदर्भात सध्या कोणतीही माहिती उपलब्ध नाही."
-                 res_type = 'Not_Found'
+        # Mandatory disclaimer
+        answer += "\n\n⚠️ टीप: ही माहिती सामान्य स्वरूपाची आहे. अंतिम निर्णयासाठी तज्ज्ञांचा सल्ला घ्यावा."
 
-        elif intent == 'Maintenance':
-             # Rules about maintenance from AIKnowledge or Default
-             if ai_assistant:
-                 answer = ai_assistant.get_legal_advice(question) # Maintenance rules are often legal/bye-laws
-                 res_type = 'Legal_KB'
-             else:
-                 answer = "मेंटेनन्स माहितीसाठी संपर्क साधा."
+        return jsonify({"reply": answer})
 
-        elif intent == 'Legal' or intent == 'Rules':
-             if ai_assistant:
-                 answer = ai_assistant.get_legal_advice(question)
-                 res_type = 'Legal_KB'
-             else:
-                 answer = "AI सेवा उपलब्ध नाही."
-
-        else: # General or Unclear
-             if ai_assistant:
-                 # Let AI handle general queries but force it to be polite and redirect if off-topic
-                 answer = ai_assistant.get_legal_advice(question) 
-                 # get_legal_advice now has strict prompt to reject unrelated topics
-                 res_type = 'AI_Gen'
-             else:
-                 answer = "कृपया सोसायटीशी संबंधित प्रश्न विचारा."
-
-    # 4. Final Disclaimer & Thank You Enforcement
-    if "सोसायटीचा Ai आपला आभारी राहील" not in answer:
-        answer += "\n\n소 सोसायटीचा Ai आपला आभारी राहील."
-
-    # 5. Save Interaction
-    interaction = AIInteraction(
-        member_id=member_id,
-        question=question,
-        answer=answer,
-        response_type=res_type,
-        category_tag=category,
-        is_safe=not is_sensitive 
-    )
-    db.session.add(interaction)
-    
-    # Context Memory
-    chat_history = session.get('ai_chat_history', [])
-    chat_history.append({'q': question, 'a': answer})
-    if len(chat_history) > 5: chat_history = chat_history[-5:]
-    session['ai_chat_history'] = chat_history
-    
-    db.session.commit()
-
-    return jsonify({
-        'answer': answer,
-        'type': res_type,
-        'category': category,
-        'timestamp': datetime.utcnow().strftime('%H:%M')
-    })
+    except Exception as e:
+        return jsonify({"reply": f"AI उत्तर देऊ शकले नाही. कारण: {str(e)}"})
 
 @app.route('/admin/ai-training')
 @admin_required
@@ -1272,4 +1172,4 @@ if __name__ == '__main__':
     # ऍप्लिकेशन चालवा
     print("🚀 सिध्द गौतम सोसायटी वेबसाईट सुरू होत आहे...")
     print("🌐 URL: http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
