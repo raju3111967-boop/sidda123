@@ -288,6 +288,12 @@ def admin_required(f):
 # PUBLIC ROUTES (सार्वजनिक रूट्स)
 # =====================================================
 
+@app.route("/status")
+def status():
+    return "Sidda Housing Society AI is Live 🚀"
+
+
+
 @app.route('/')
 def index():
     """मुख्य पृष्ठ"""
